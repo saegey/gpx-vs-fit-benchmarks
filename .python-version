@@ -1,0 +1,2 @@
+# Specify Python version for version managers (asdf, pyenv, etc.)
+3.12.8
