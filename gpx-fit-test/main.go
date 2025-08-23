@@ -9,6 +9,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/muktihari/fit/decoder"
+	"github.com/muktihari/fit/profile/filedef"
 	"github.com/tkrajina/gpxgo/gpx"
 	"github.com/tormoder/fit"
 )
@@ -77,6 +79,21 @@ func parseGPX(b []byte) error {
 	return err
 }
 
+func parseFITMuktihari(b []byte) error {
+	lis := filedef.NewListener()
+	dec := decoder.New(bytes.NewReader(b),
+		decoder.WithMesgListener(lis),
+		decoder.WithBroadcastOnly(),
+	)
+	_, err := dec.Decode()
+	if err != nil {
+		return err
+	}
+	_ = lis.File() // ensure the file is processed
+	lis.Close()
+	return nil
+}
+
 func main() {
 	fitPath := flag.String("fit", "testdata/activity.fit", "FIT file path")
 	gpxPath := flag.String("gpx", "testdata/activity.gpx", "GPX file path")
@@ -95,9 +112,10 @@ func main() {
 
 	fitStats := run("FIT", fitBytes, *n, parseFIT)
 	gpxStats := run("GPX", gpxBytes, *n, parseGPX)
+	fitMuktihariStats := run("FIT-muktihari", fitBytes, *n, parseFITMuktihari)
 
 	if *jsonOut {
-		out := map[string]stats{"fit": fitStats, "gpx": gpxStats}
+		out := map[string]stats{"fit": fitStats, "fit-muktihari": fitMuktihariStats, "gpx": gpxStats}
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
 		enc.Encode(out)
@@ -108,6 +126,8 @@ func main() {
 		fitStats.Bytes, fitStats.N, fitStats.MeanMs, fitStats.P50Ms, fitStats.P95Ms, fitStats.MinMs, fitStats.MaxMs)
 	fmt.Printf("GPX  : size=%dB  n=%d  mean=%.2fms  p50=%.2fms  p95=%.2fms  min=%.2fms  max=%.2fms\n",
 		gpxStats.Bytes, gpxStats.N, gpxStats.MeanMs, gpxStats.P50Ms, gpxStats.P95Ms, gpxStats.MinMs, gpxStats.MaxMs)
+	fmt.Printf("FIT-muktihari: size=%dB  n=%d  mean=%.2fms  p50=%.2fms  p95=%.2fms  min=%.2fms  max=%.2fms\n",
+		fitMuktihariStats.Bytes, fitMuktihariStats.N, fitMuktihariStats.MeanMs, fitMuktihariStats.P50Ms, fitMuktihariStats.P95Ms, fitMuktihariStats.MinMs, fitMuktihariStats.MaxMs)
 	fmt.Printf("\nSpeedup (GPX/FIT mean): %.2fx\n", gpxStats.MeanMs/fitStats.MeanMs)
 	fmt.Printf("File size ratio (GPX/FIT): %.2fx\n", float64(gpxStats.Bytes)/float64(fitStats.Bytes))
 }
