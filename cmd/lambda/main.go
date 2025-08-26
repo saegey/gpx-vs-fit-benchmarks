@@ -10,7 +10,7 @@ import (
 )
 
 func handler(ctx context.Context) (any, error) {
-	results, err := gobench.RunAll()
+	results, err := gobench.RunAll(25)
 	if err != nil {
 		return nil, err
 	}
