@@ -1,27 +1,21 @@
+// gobench/run.go
 package gobench
 
 import (
 	"bytes"
-	"os"
+	_ "embed"
+	"sort"
 	"time"
 
 	"github.com/tkrajina/gpxgo/gpx"
 	"github.com/tormoder/fit"
 )
 
-var fitBytes, gpxBytes []byte
+//go:embed testdata/BWR_San_Diego_Waffle_Ride_.fit
+var fitBytes []byte
 
-func init() {
-	var err error
-	fitBytes, err = os.ReadFile("../testdata/BWR_San_Diego_Waffle_Ride_.fit")
-	if err != nil {
-		panic(err)
-	}
-	gpxBytes, err = os.ReadFile("../testdata/BWR_San_Diego_Waffle_Ride_.gpx")
-	if err != nil {
-		panic(err)
-	}
-}
+//go:embed testdata/BWR_San_Diego_Waffle_Ride_.gpx
+var gpxBytes []byte
 
 type Result struct {
 	Format     string  `json:"format"`
@@ -34,36 +28,51 @@ type Result struct {
 	MaxMS      float64 `json:"max_ms"`
 }
 
-func runFIT(iter int) Result {
-	durations := make([]time.Duration, iter)
+// RunAll executes both parsers for 'iter' iterations and returns summary stats.
+func RunAll(iter int) ([]Result, error) {
+	fitDur := make([]time.Duration, iter)
 	for i := 0; i < iter; i++ {
 		start := time.Now()
-		_, err := fit.Decode(bytes.NewReader(fitBytes))
-		if err != nil {
-			panic(err)
+		if _, err := fit.Decode(bytes.NewReader(fitBytes)); err != nil {
+			return nil, err
 		}
-		durations[i] = time.Since(start)
+		fitDur[i] = time.Since(start)
 	}
-	return summarize("FIT", "tormoder/fit", iter, durations)
-}
 
-func runGPX(iter int) Result {
-	durations := make([]time.Duration, iter)
+	gpxDur := make([]time.Duration, iter)
 	for i := 0; i < iter; i++ {
 		start := time.Now()
-		_, err := gpx.Parse(bytes.NewReader(gpxBytes))
-		if err != nil {
-			panic(err)
+		if _, err := gpx.Parse(bytes.NewReader(gpxBytes)); err != nil {
+			return nil, err
 		}
-		durations[i] = time.Since(start)
+		gpxDur[i] = time.Since(start)
 	}
-	return summarize("GPX", "tkrajina/gpxgo", iter, durations)
-}
 
-// RunAll executes both parsers a fixed number of iterations
-func RunAll(iter int) []Result {
 	return []Result{
-		runFIT(iter),
-		runGPX(iter),
+		summarize("FIT", "tormoder/fit", iter, fitDur),
+		summarize("GPX", "tkrajina/gpxgo", iter, gpxDur),
+	}, nil
+}
+
+func summarize(format, parser string, iter int, durs []time.Duration) Result {
+	sort.Slice(durs, func(i, j int) bool { return durs[i] < durs[j] })
+	total := time.Duration(0)
+	for _, d := range durs {
+		total += d
+	}
+	mean := float64(total.Milliseconds()) / float64(iter)
+	p := func(q float64) float64 {
+		idx := int(float64(len(durs)-1) * q)
+		return float64(durs[idx].Milliseconds())
+	}
+	return Result{
+		Format:     format,
+		Parser:     parser,
+		Iterations: iter,
+		MeanMS:     mean,
+		P50MS:      p(0.50),
+		P95MS:      p(0.95),
+		MinMS:      float64(durs[0].Milliseconds()),
+		MaxMS:      float64(durs[len(durs)-1].Milliseconds()),
 	}
 }
