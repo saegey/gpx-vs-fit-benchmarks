@@ -30,3 +30,11 @@ if [ -f node-bench/bench.js ]; then
 else
   echo "Node.js benchmark script not found."
 fi
+
+# Ruby benchmark
+if [ -f ruby-bench/bench.rb ]; then
+  echo "\n--- Ruby Benchmark (rubyfit) ---"
+  (cd ruby-bench && bundle install >/dev/null && ruby bench.rb ../$FIT_FILE $ITERS)
+else
+  echo "Ruby benchmark script not found."
+fi
