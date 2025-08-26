@@ -1,0 +1,51 @@
+service: gpx-vs-fit-benchmarks
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  region: us-west-2
+  runtime: nodejs20.x
+  memorySize: 1024
+  timeout: 120
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+  environment:
+    COMMIT_SHA: ${env:COMMIT_SHA, 'dev'}
+
+functions:
+  nodeBench:
+    handler: node-bench/handler.run
+    package:
+      individually: true
+      patterns:
+        - node-bench/**
+        - '!**/*.test.*'
+    events:
+      # - schedule: rate(6 hours)   # optional
+
+  pythonBench:
+    runtime: python3.11   # was python3.12 (not allowed in v3 list)
+    handler: python-bench/handler.lambda_handler
+    package:
+      individually: true
+      patterns:
+        - python-bench/**
+        - '!**/*.test.*'
+    events:
+      # - schedule: rate(6 hours)   # optional
+
+  goBench:
+    runtime: provided.al2023
+    handler: bootstrap
+    package:
+      individually: true
+      artifact: dist/go-bench.zip  # build step should zip bootstrap binary + go-bench assets
+    events:
+      # - schedule: rate(6 hours)   # optional
