@@ -3,7 +3,6 @@ package gobench
 
 import (
 	"bytes"
-	_ "embed"
 	"sort"
 	"time"
 
