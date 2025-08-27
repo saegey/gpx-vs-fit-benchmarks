@@ -245,3 +245,128 @@ done
 ]
 ```
 
+## Lambda 1024 mb memory Benchmark
+```bash
+❯ ./run_all_lambda_funcs.sh dev5 
+-e 
+--- nodeFit ---
+{
+    "ok": true
+}
+--------------------------------------------------------------------
+START
+2025-08-27 14:06:40.479 INFO    [js] start ts=1756328800479
+2025-08-27 14:07:17.997 INFO    [js] fit-bench.js out:
+[
+  {
+    "format": "FIT",
+    "parser": "fit-file-parser",
+    "iterations": 25,
+    "mean_ms": 1492.6367101599994,
+    "p50_ms": 1486.650665000001,
+    "p95_ms": 1555.7191669999993,
+    "min_ms": 1400.0084720000013,
+    "max_ms": 1642.333054
+  }
+]
+
+2025-08-27 14:07:17.997 INFO    [js] total handler time 37517.82ms
+END Duration: 37522.08 ms (init: 146.52 ms) Memory Used: 143 MB
+
+-e 
+--- nodeGpx ---
+{
+    "ok": true
+}
+--------------------------------------------------------------------
+START
+2025-08-27 14:07:20.449 INFO    [js] start ts=1756328840449
+2025-08-27 14:08:30.538 INFO    [js] gpx-bench.js out:
+[
+  {
+    "format": "GPX",
+    "parser": "fast-xml-parser",
+    "iterations": 25,
+    "mean_ms": 2792.8647244,
+    "p50_ms": 2744.605236000003,
+    "p95_ms": 2800.402799000003,
+    "min_ms": 2714.5204230000018,
+    "max_ms": 3620.4947970000003
+  }
+]
+
+2025-08-27 14:08:30.538 INFO    [js] total handler time 70089.26ms
+END Duration: 70093.43 ms (init: 152.08 ms) Memory Used: 293 MB
+
+-e 
+--- pyFit ---
+{
+    "ok": true,
+    "count": 1
+}
+--------------------------------------------------------------------
+START
+[py] start ts=1756328913496 cold=True
+[py] run_bench (fit) done in 110274.82ms
+{"_aws": {"Timestamp": 1756328913503, "CloudWatchMetrics": [{"Namespace": "GPXvsFIT/Benchmarks", "Dimensions": [["Language", "Format", "Parser", "MemoryMB", "Cold"]], "Metrics": [{"Name": "mean_ms", "Unit": "Milliseconds"}, {"Name": "p50_ms", "Unit": "Milliseconds"}, {"Name": "p95_ms", "Unit": "Milliseconds"}]}]}, "Language": "Python", "Format": "FIT", "Parser": "fitdecode", "MemoryMB": 1024, "Cold": true, "mean_ms": 11025.127620700005, "p50_ms": 11003.737436000023, "p95_ms": 11107.643130000042}
+{"ts": 1756328913503, "lang": "Python", "memory_mb": 1024, "cold": true, "commit": "dev", "format": "FIT", "parser": "fitdecode", "iterations": 10, "mean_ms": 11025.127620700005, "p50_ms": 11003.737436000023, "p95_ms": 11107.643130000042, "min_ms": 10925.412312000048, "max_ms": 11244.333019000009}
+[py] total handler time 110281.24ms
+END Duration: 110283.04 ms (init: 352.54 ms) Memory Used: 71 MB
+
+-e 
+--- pyGpx ---
+{
+    "ok": true,
+    "count": 1
+}
+--------------------------------------------------------------------
+START
+[py] start ts=1756329026731 cold=True
+[py] run_bench (gpx) done in 47837.55ms
+{"_aws": {"Timestamp": 1756329026731, "CloudWatchMetrics": [{"Namespace": "GPXvsFIT/Benchmarks", "Dimensions": [["Language", "Format", "Parser", "MemoryMB", "Cold"]], "Metrics": [{"Name": "mean_ms", "Unit": "Milliseconds"}, {"Name": "p50_ms", "Unit": "Milliseconds"}, {"Name": "p95_ms", "Unit": "Milliseconds"}]}]}, "Language": "Python", "Format": "GPX", "Parser": "gpxpy", "MemoryMB": 1024, "Cold": true, "mean_ms": 4778.058608900001, "p50_ms": 4763.092366000001, "p95_ms": 4835.350298999998}
+{"ts": 1756329026731, "lang": "Python", "memory_mb": 1024, "cold": true, "commit": "dev", "format": "GPX", "parser": "gpxpy", "iterations": 10, "mean_ms": 4778.058608900001, "p50_ms": 4763.092366000001, "p95_ms": 4835.350298999998, "min_ms": 4620.306272000001, "max_ms": 5197.912104}
+[py] total handler time 47837.79ms
+END Duration: 47839.75 ms (init: 303.28 ms) Memory Used: 341 MB
+
+-e 
+--- goFit ---
+{
+    "count": 1,
+    "ok": true
+}
+--------------------------------------------------------------------
+START
+[go] start ts=1756329076344
+[go] RunFit done in 3234.03ms
+{"format":"FIT","iterations":25,"lang":"Go","max_ms":172.542613,"mean_ms":129.36038932,"min_ms":119.514382,"p50_ms":123.205216,"p95_ms":138.705589,"parser":"tormoder/fit"}
+[go] total handler time 3234.14ms
+END Duration: 3236.98 ms (init: 80.02 ms) Memory Used: 42 MB
+
+-e 
+--- goGpx ---
+{
+    "count": 1,
+    "ok": true
+}
+--------------------------------------------------------------------
+START
+[go] start ts=1756329081155
+[go] RunGpx done in 47459.68ms
+{"format":"GPX","iterations":25,"lang":"Go","max_ms":2061.580418,"mean_ms":1898.3855437599998,"min_ms":1842.203819,"p50_ms":1895.050641,"p95_ms":1940.144303,"parser":"tkrajina/gpxgo"}
+[go] total handler time 47459.83ms
+END Duration: 47462.21 ms (init: 77.43 ms) Memory Used: 128 MB
+
+-e 
+--- rubyFit ---
+{
+    "ok": true,
+    "count": 1
+}
+--------------------------------------------------------------------
+START
+[rb] start ts=1756329131857 cold=true
+[rb] bench done in 7140.26ms
+{"ts":1756329138997,"lang":"Ruby","format":"FIT","parser":"rubyfit","iterations":25,"mean_ms":273.51524956000105,"p50_ms":274.5697060000012,"p95_ms":278.2072790000001,"min_ms":264.88435600000315,"max_ms":297.7202630000022,"memory_mb":1024,"cold":true,"commit":"dev"}
+[rb] total handler time 7140.68ms
+END Duration: 7145.22 ms (init: 641.93 ms) Memory Used: 49 MB
+```
