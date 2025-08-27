@@ -1,5 +1,6 @@
 service: gpx-vs-fit-benchmarks
 frameworkVersion: "3"
+
 package:
   individually: true
 
@@ -21,43 +22,96 @@ provider:
   environment:
     COMMIT_SHA: ${env:COMMIT_SHA, 'dev'}
 
-functions:
-  nodeBench:
+# Reusable snippets
+custom:
+  nodeBase: &nodeBase
     runtime: nodejs20.x
-    handler: node-bench/handler.run
     package:
       patterns:
-        - node-bench/** # include your code
-        - "!node-bench/**/*.test.*"
         - "!**/.DS_Store"
-        # If run.js requires deps installed in node-bench/node_modules, include them:
-        - node-bench/node_modules/**
-    events:
-      # - schedule: rate(6 hours)   # optional
+        - "!**/*.test.*"
 
-  pythonBench:
-    runtime: python3.11 # was python3.12 (not allowed in v3 list)
-    handler: python_bench/handler.lambda_handler
+  pyBase: &pyBase
+    runtime: python3.11
     package:
       patterns:
-        - python_bench/**
+        - "!**/.DS_Store"
         - "!**/*.test.*"
-    events:
-      # - schedule: rate(6 hours)   # optional
 
-  goBench:
+functions:
+  # Node — FIT
+  nodeFit:
+    <<: *nodeBase
+    handler: node-bench/fit.handler   # minimal file that only imports FIT path
+    package:
+      patterns:
+        - node-bench/fit.js
+        - node-bench/fit-utils/**
+        - node-bench/node_modules/fit-file-parser/**
+
+  # Node — GPX
+  nodeGpx:
+    <<: *nodeBase
+    handler: node-bench/gpx.handler
+    package:
+      patterns:
+        - node-bench/gpx.js
+        - node-bench/gpx-utils/**
+        - node-bench/node_modules/fast-xml-parser/**
+
+  # Python — FIT
+  pyFit:
+    <<: *pyBase
+    handler: python_bench/fit_handler.lambda_handler
+    package:
+      patterns:
+        - python_bench/fit_handler.py
+        - python_bench/fit_lib/**     # e.g., fitparse or fitdecode vendored
+        - python_bench/vendor/fit/**  # only the FIT deps
+
+  # Python — GPX
+  pyGpx:
+    <<: *pyBase
+    handler: python_bench/gpx_handler.lambda_handler
+    package:
+      patterns:
+        - python_bench/gpx_handler.py
+        - python_bench/gpx_lib/**
+        - python_bench/vendor/xml/**
+
+  # Go — FIT
+  goFit:
     runtime: provided.al2023
     handler: bootstrap
     package:
-      artifact: dist/go-bench.zip # build step should zip bootstrap binary + go-bench assets
-    events:
-      # - schedule: rate(6 hours)   # optional
+      artifact: dist/go-fit/go-fit.zip       # build just the FIT binary
 
-  rubyBench:
+  # Go — GPX
+  goGpx:
+    runtime: provided.al2023
+    handler: bootstrap
+    package:
+      artifact: dist/go-gpx/go-gpx.zip
+
+  # Ruby — FIT
+  rubyFit:
     runtime: ruby3.2
-    handler: ruby_bench/handler.handle
+    handler: ruby_bench/fit.handle
     package:
       patterns:
-        - ruby_bench/**
-        - "!ruby_bench/**/*.test.*"
-        - "!**/.DS_Store"
+        - ruby_bench/bench.rb
+        - ruby_bench/fit.rb
+        - ruby_bench/Gemfile
+        - ruby_bench/Gemfile.lock
+        - ruby_bench/vendor/bundle/**  # only FIT gems
+
+  # Ruby — GPX
+  # rubyGpx:
+  #   runtime: ruby3.2
+  #   handler: ruby_bench/gpx.handle
+  #   package:
+  #     patterns:
+  #       - ruby_bench/gpx.rb
+  #       - ruby_bench/Gemfile
+  #       - ruby_bench/Gemfile.lock
+  #       - ruby_bench/vendor/bundle/**  # only GPX gems

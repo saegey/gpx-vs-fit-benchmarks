@@ -58,3 +58,4 @@ yarn.lock
 /testdata/
 .serverless
 bootstrap
+.serverless/nodeBench.zip

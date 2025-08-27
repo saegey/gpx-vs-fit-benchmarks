@@ -53,3 +53,20 @@ module RubyFitBench
     summarize(samples, iters, raw.bytesize)
   end
 end
+
+
+# CLI entrypoint
+if $PROGRAM_NAME == __FILE__
+  require "optparse"
+  opts = { iters: 25 }
+  OptionParser.new do |opt|
+    opt.on("-f", "--fit PATH", "FIT file path") { |v| opts[:fit_path] = v }
+    opt.on("-n", "--iters N", Integer, "Iterations") { |v| opts[:iters] = v }
+  end.parse!
+  unless opts[:fit_path]
+    warn "Usage: #{$PROGRAM_NAME} -f FIT_FILE [-n ITERS]"
+    exit 1
+  end
+  result = RubyFitBench.run(fit_path: opts[:fit_path], iters: opts[:iters])
+  puts JSON.pretty_generate([result])
+end

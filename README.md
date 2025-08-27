@@ -7,16 +7,10 @@ This benchmark was created to go along with a blog post [From GPX to FIT: Lesson
 ## Purpose
 The goal is to compare the speed and efficiency of popular FIT and GPX parsing libraries, using real-world activity files, to help developers choose the best tool for their needs.
 
-## Structure
-- **python-bench/**: Python scripts and requirements for benchmarking `fitdecode`, `fitparse`, and `gpxpy`.
-- **gpx-fit-test/**: Go code for benchmarking FIT and GPX parsers.
-- **node-bench/**: Node.js scripts for benchmarking FIT and GPX parsers.
-- **testdata/**: Sample FIT and GPX files used for benchmarking.
-
 ## How to Use
 1. Install the required language versions (see `.python-version` and `.node-version`).
 2. Install dependencies for each language (see respective folders).
-3. Run the benchmark scripts in each language folder.
+3. Run the benchmark scripts in each language folder or via the shell script
 
 ## Deploying/Running on AWS Lambda
 
@@ -83,18 +77,34 @@ docker run --rm --platform linux/amd64 -v "$PWD":/work -w /work amazonlinux:2023
 Notes:
 - Both `ruby_bench/handler.rb` and `ruby_bench/bench.rb` call `require 'bundler/setup'` so `vendor/bundle` is on the load path.
 
-### Go (cmd/lambda)
 
-The Go Lambda uses embedded test data (via `go:embed`) in `gobench/run.go`.
+### Go (cmd/fit and cmd/gpx)
 
-Build the bootstrap binary for Lambda (x86_64; set `GOARCH=arm64` for Graviton):
+The Go Lambda handlers are split for FIT and GPX:
 
-```bash
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap ./cmd/lambda
-zip -9 dist/go-bench.zip bootstrap
+```
+cmd/
+	fit/
+		main.go      # FIT Lambda handler
+	gpx/
+		main.go      # GPX Lambda handler
 ```
 
-If you package additional assets manually, include them in the ZIP before deploying.
+Build each binary for AWS Lambda:
+
+```sh
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o dist/go-fit/bootstrap ./cmd/fit
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o dist/go-gpx/bootstrap ./cmd/gpx
+```
+
+Zip each for deployment:
+
+```sh
+cd dist/go-fit && zip -9 go-fit.zip bootstrap
+cd dist/go-gpx && zip -9 go-gpx.zip bootstrap
+```
+
+Deploy using Serverless or your preferred method. See `serverless.yml` for function/zip mapping.
 
 ### Serverless deploy/invoke
 
@@ -103,10 +113,31 @@ If you package additional assets manually, include them in the ZIP before deploy
 npx serverless deploy --stage dev
 
 # Invoke each function and stream logs
-npx serverless invoke -f nodeBench --stage dev -l
-npx serverless invoke -f pythonBench --stage dev -l
-npx serverless invoke -f rubyBench --stage dev -l
-npx serverless invoke -f goBench --stage dev -l
+npx serverless invoke -f nodeFit --stage dev -l
+npx serverless invoke -f nodeGpx --stage dev -l
+npx serverless invoke -f pyFit --stage dev -l
+npx serverless invoke -f pyGpx --stage dev -l
+npx serverless invoke -f goFit --stage dev -l
+npx serverless invoke -f goGpx --stage dev -l
+npx serverless invoke -f rubyFit --stage dev -l
+# npx serverless invoke -f rubyGpx --stage dev -l  # Uncomment if/when implemented
+```
+
+### Run all Lambda functions and display output
+
+You can use this shell script to invoke all Lambda functions and print their output:
+
+```bash
+#!/usr/bin/env bash
+set -e
+STAGE=${1:-dev}
+FUNCS=(nodeFit nodeGpx pyFit pyGpx goFit goGpx rubyFit)
+for fn in "${FUNCS[@]}"; do
+	echo -e "\n--- $fn ---"
+	npx serverless invoke -f "$fn" --stage "$STAGE" -l || echo "$fn failed"
+done
+# Uncomment below if/when rubyGpx is implemented
+# npx serverless invoke -f rubyGpx --stage "$STAGE" -l
 ```
 
 ## Version Management
