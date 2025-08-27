@@ -1,16 +1,11 @@
-import python_bench.fit_bench as bench
+
 import json
 import os
 import sys
 import time
-from pathlib import Path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "vendor"))
 
-# add vendored deps to path FIRST
-HERE = Path(__file__).parent
-VENDOR = HERE / "vendor"
-if VENDOR.exists():
-    sys.path.insert(0, str(VENDOR))
-
+import python_bench.fit_bench as bench
 
 WARM = False
 
@@ -18,13 +13,14 @@ WARM = False
 def lambda_handler(event, ctx):
     global WARM
     t_start = time.perf_counter()
+
     print(f"[py] start ts={int(time.time()*1000)} cold={not WARM}")
     commit = os.environ.get("COMMIT_SHA", "dev")
     memory = int(os.environ.get("AWS_LAMBDA_FUNCTION_MEMORY_SIZE", "0"))
     now = int(time.time() * 1000)
 
     t0 = time.perf_counter()
-    results = bench.run_bench(iterations=1, only="fit")
+    results = bench.run_benchmark(iterations=10)
     print(
         f"[py] run_bench (fit) done in {(time.perf_counter()-t0)*1000:.2f}ms")
 

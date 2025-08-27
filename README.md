@@ -147,3 +147,195 @@ done
 ## Notes
 - This project is intended for comparative benchmarking only.
 - Contributions and new parser benchmarks are welcome!
+
+
+## M4 Pro Benchmark results
+```bash
+❯ ./run_all_benchmarks.sh
+\n--- Python Benchmark (FIT) ---
+[
+  {
+    "format": "FIT",
+    "parser": "fitdecode",
+    "iterations": 25,
+    "mean_ms": 1739.0556768141687,
+    "p50_ms": 1730.7363753207028,
+    "p95_ms": 1792.0642499811947,
+    "min_ms": 1704.8117080703378,
+    "max_ms": 1838.9354590326548
+  }
+]
+\n--- Python Benchmark (GPX) ---
+[
+  {
+    "format": "GPX",
+    "parser": "gpxpy",
+    "iterations": 25,
+    "mean_ms": 996.6540282405913,
+    "p50_ms": 1010.9767080284655,
+    "p95_ms": 1094.2013747990131,
+    "min_ms": 898.6390000209212,
+    "max_ms": 1103.7164167501032
+  }
+]
+\n--- Go Benchmark (FIT) ---
+[
+  {
+    "format": "FIT",
+    "parser": "tormoder/fit",
+    "iterations": 25,
+    "mean_ms": 20.23768836,
+    "p50_ms": 20.160375,
+    "p95_ms": 20.750625,
+    "min_ms": 19.155666,
+    "max_ms": 25.504708
+  }
+]
+\n--- Go Benchmark (GPX) ---
+[
+  {
+    "format": "GPX",
+    "parser": "tkrajina/gpxgo",
+    "iterations": 25,
+    "mean_ms": 274.16526664,
+    "p50_ms": 272.36025,
+    "p95_ms": 283.117,
+    "min_ms": 264.932,
+    "max_ms": 299.56225
+  }
+]
+\n--- Node.js Benchmark ---
+[
+  {
+    "format": "FIT",
+    "parser": "fit-file-parser",
+    "iterations": 25,
+    "mean_ms": 152.69957679999993,
+    "p50_ms": 150.90512500000006,
+    "p95_ms": 165.56041699999992,
+    "min_ms": 140.0577089999997,
+    "max_ms": 174.748166
+  }
+]
+[
+  {
+    "format": "GPX",
+    "parser": "fast-xml-parser",
+    "iterations": 25,
+    "mean_ms": 349.79962996,
+    "p50_ms": 347.6642499999998,
+    "p95_ms": 357.261,
+    "min_ms": 340.13854100000026,
+    "max_ms": 371.359709
+  }
+]
+\n--- Ruby Benchmark (rubyfit) ---
+[
+  {
+    "format": "FIT",
+    "parser": "rubyfit",
+    "iterations": 25,
+    "bytes": 1558095,
+    "mean_ms": 45.62139991670847,
+    "p50_ms": 45.60600034892559,
+    "p95_ms": 46.58300057053566,
+    "min_ms": 44.488999992609024,
+    "max_ms": 47.14700020849705
+  }
+]
+
+gpx-vs-fit-benchmarks on  main [!?⇡] via 🐹 v1.25.0 via  v21.5.0 via 🐍 v3.12.8 (.venv) on ☁️  adam@visible.link took 1m30s 
+➜ ./run_all_benchmarks.sh
+\n--- Python Benchmark (FIT) ---
+[
+  {
+    "format": "FIT",
+    "parser": "fitdecode",
+    "iterations": 25,
+    "mean_ms": 1708.618130106479,
+    "p50_ms": 1707.5792918913066,
+    "p95_ms": 1726.4431254006922,
+    "min_ms": 1680.467292200774,
+    "max_ms": 1731.3364166766405
+  }
+]
+\n--- Python Benchmark (GPX) ---
+[
+  {
+    "format": "GPX",
+    "parser": "gpxpy",
+    "iterations": 25,
+    "mean_ms": 965.5417267978191,
+    "p50_ms": 973.305375315249,
+    "p95_ms": 1053.5742081701756,
+    "min_ms": 870.0456251390278,
+    "max_ms": 1119.412041734904
+  }
+]
+\n--- Go Benchmark (FIT) ---
+[
+  {
+    "format": "FIT",
+    "parser": "tormoder/fit",
+    "iterations": 25,
+    "mean_ms": 21.130188360000002,
+    "p50_ms": 20.72875,
+    "p95_ms": 21.7165,
+    "min_ms": 19.977917,
+    "max_ms": 25.439583
+  }
+]
+\n--- Go Benchmark (GPX) ---
+[
+  {
+    "format": "GPX",
+    "parser": "tkrajina/gpxgo",
+    "iterations": 25,
+    "mean_ms": 285.55204163999997,
+    "p50_ms": 275.373916,
+    "p95_ms": 308.075416,
+    "min_ms": 268.349917,
+    "max_ms": 353.530333
+  }
+]
+\n--- Node.js Benchmark ---
+[
+  {
+    "format": "FIT",
+    "parser": "fit-file-parser",
+    "iterations": 25,
+    "mean_ms": 159.77257500000005,
+    "p50_ms": 153.3343749999999,
+    "p95_ms": 178.71695799999998,
+    "min_ms": 144.89116699999977,
+    "max_ms": 210.96279199999992
+  }
+]
+[
+  {
+    "format": "GPX",
+    "parser": "fast-xml-parser",
+    "iterations": 25,
+    "mean_ms": 370.25350840000004,
+    "p50_ms": 368.85483299999987,
+    "p95_ms": 397.3850000000002,
+    "min_ms": 348.5311670000001,
+    "max_ms": 423.097625
+  }
+]
+\n--- Ruby Benchmark (rubyfit) ---
+[
+  {
+    "format": "FIT",
+    "parser": "rubyfit",
+    "iterations": 25,
+    "bytes": 1558095,
+    "mean_ms": 46.92019999027252,
+    "p50_ms": 46.02400027215481,
+    "p95_ms": 46.875,
+    "min_ms": 44.93400081992149,
+    "max_ms": 58.787000365555286
+  }
+]
+```
+

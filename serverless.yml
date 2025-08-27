@@ -66,8 +66,12 @@ functions:
     package:
       patterns:
         - python_bench/fit_handler.py
-        - python_bench/fit_lib/**     # e.g., fitparse or fitdecode vendored
-        - python_bench/vendor/fit/**  # only the FIT deps
+        - python_bench/fit_bench.py
+        - python_bench/bench_common.py
+        - python_bench/testdata/**
+        - python_bench/__init__.py
+        - python_bench/vendor/**  # only the FIT deps
+        - '!**/__pycache__/**'
 
   # Python — GPX
   pyGpx:
@@ -76,8 +80,12 @@ functions:
     package:
       patterns:
         - python_bench/gpx_handler.py
-        - python_bench/gpx_lib/**
-        - python_bench/vendor/xml/**
+        - python_bench/gpx_bench.py
+        - python_bench/bench_common.py
+        - python_bench/testdata/**
+        - python_bench/__init__.py
+        - python_bench/vendor/**  # only the FIT deps
+        - '!**/__pycache__/**'
 
   # Go — FIT
   goFit:
