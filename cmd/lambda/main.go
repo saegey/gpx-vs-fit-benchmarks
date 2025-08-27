@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/saegey/gpx-fit-benchmark-mono/gobench"
+	"github.com/saegey/gpx-vs-fit-benchmarks/gobench"
 )
 
 func handler(ctx context.Context) (any, error) {

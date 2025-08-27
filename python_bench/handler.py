@@ -23,7 +23,7 @@ def lambda_handler(event, ctx):
     # your bench module should return a list of result dicts
     # each dict should have: format, parser, iterations, mean_ms, p50_ms, p95_ms, min_ms, max_ms
     t0 = time.perf_counter()
-    results = bench.run_bench(iterations=25)  # implement this in gpx_fit_bench.py
+    results = bench.run_bench(iterations=1)  # implement this in gpx_fit_bench.py
     print(f"[py] run_bench done in {(time.perf_counter()-t0)*1000:.2f}ms")
 
     # log EMF + JSON lines

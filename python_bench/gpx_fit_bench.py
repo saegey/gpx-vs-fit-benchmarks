@@ -135,8 +135,7 @@ def _main(argv: list[str]) -> int:
     results = run_bench(iterations=args.iterations, fit_path=args.fit, gpx_path=args.gpx)
 
     if args.json:
-        for r in results:
-            print(json.dumps(r))
+        print(json.dumps(results, indent=2))
     else:
         # human-friendly
         for r in results:

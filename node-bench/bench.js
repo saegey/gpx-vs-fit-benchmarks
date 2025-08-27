@@ -14,10 +14,6 @@ function stats(times) {
   return { mean, p50, p95, min: arr[0], max: arr[arr.length - 1], n: arr.length };
 }
 
-function fmt(ms) {
-  return `${ms.toFixed(2)}ms`;
-}
-
 function flatFindTrkpts(node, hits) {
   if (!node || typeof node !== 'object') return;
   // fast-xml-parser creates arrays for repeated nodes
@@ -88,11 +84,7 @@ async function bench(label, n, fn) {
     await fn();
     times.push(performance.now() - t0);
   }
-  const s = stats(times);
-  console.log(
-    `${label}: n=${s.n} mean=${fmt(s.mean)} p50=${fmt(s.p50)} p95=${fmt(s.p95)} min=${fmt(s.min)} max=${fmt(s.max)}`
-  );
-  return s;
+  return stats(times);
 }
 
 async function main() {
@@ -105,12 +97,9 @@ async function main() {
   const fitBuf = fs.readFileSync(fitPath);
   const gpxBuf = fs.readFileSync(gpxPath);
 
-  console.log(`Sizes: FIT=${fitBuf.length.toLocaleString()} B  GPX=${gpxBuf.length.toLocaleString()} B`);
-
-  // One untimed pass to get counts and verify parity
-  const gpxCount = parseGpxCountPoints(gpxBuf);
-  const fitCount = await parseFitCountRecords(fitBuf, { force: true });
-  console.log(`Record/point counts: fit_records=${fitCount}  gpx_points=${gpxCount}`);
+  // One untimed pass to get counts and verify parity (optional, not output)
+  // const gpxCount = parseGpxCountPoints(gpxBuf);
+  // const fitCount = await parseFitCountRecords(fitBuf, { force: true });
 
   // Timed runs
   const fitStats = await bench('FIT (fit-file-parser)', N, async () => {
@@ -121,8 +110,30 @@ async function main() {
     parseGpxCountPoints(gpxBuf);
   });
 
-  console.log(`\nSpeedup (GPX/FIT mean): ${(gpxStats.mean / fitStats.mean).toFixed(2)}x`);
-  console.log(`File size ratio (GPX/FIT): ${(gpxBuf.length / fitBuf.length).toFixed(2)}x`);
+  // Output JSON array in requested format
+  const results = [
+    {
+      format: "FIT",
+      parser: "fit-file-parser",
+      iterations: N,
+      mean_ms: fitStats.mean,
+      p50_ms: fitStats.p50,
+      p95_ms: fitStats.p95,
+      min_ms: fitStats.min,
+      max_ms: fitStats.max
+    },
+    {
+      format: "GPX",
+      parser: "fast-xml-parser",
+      iterations: N,
+      mean_ms: gpxStats.mean,
+      p50_ms: gpxStats.p50,
+      p95_ms: gpxStats.p95,
+      min_ms: gpxStats.min,
+      max_ms: gpxStats.max
+    }
+  ];
+  console.log(JSON.stringify(results, null, 2));
 }
 
 main().catch((e) => {

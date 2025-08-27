@@ -56,8 +56,5 @@ yarn.lock
 
 # Test data
 /testdata/
-.serverless/*
 .serverless
-.serverless/nodeBench.zip
-.serverless/pythonBench.zip
 bootstrap
