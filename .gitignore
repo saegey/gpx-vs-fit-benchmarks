@@ -14,7 +14,7 @@ dist/
 *.egg
 pip-log.txt
 pip-delete-this-directory.txt
-
+python_bench/vendor/
 # Jupyter Notebooks
 .ipynb_checkpoints
 
@@ -56,3 +56,8 @@ yarn.lock
 
 # Test data
 /testdata/
+.serverless/*
+.serverless
+.serverless/nodeBench.zip
+.serverless/pythonBench.zip
+bootstrap
