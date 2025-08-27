@@ -3,6 +3,7 @@ package gobench
 
 import (
 	"bytes"
+	_ "embed"
 	"sort"
 	"time"
 
@@ -15,6 +16,8 @@ var fitBytes []byte
 
 //go:embed testdata/BWR_San_Diego_Waffle_Ride_.gpx
 var gpxBytes []byte
+
+// Files are embedded at build time via go:embed; no runtime loading required.
 
 type Result struct {
 	Format     string  `json:"format"`
@@ -55,14 +58,16 @@ func RunAll(iter int) ([]Result, error) {
 
 func summarize(format, parser string, iter int, durs []time.Duration) Result {
 	sort.Slice(durs, func(i, j int) bool { return durs[i] < durs[j] })
-	total := time.Duration(0)
+	var total time.Duration
 	for _, d := range durs {
 		total += d
 	}
-	mean := float64(total.Milliseconds()) / float64(iter)
+	// use ns precision -> ms
+	toMS := func(d time.Duration) float64 { return float64(d.Nanoseconds()) / 1e6 }
+	mean := toMS(total) / float64(iter)
 	p := func(q float64) float64 {
 		idx := int(float64(len(durs)-1) * q)
-		return float64(durs[idx].Milliseconds())
+		return toMS(durs[idx])
 	}
 	return Result{
 		Format:     format,
@@ -71,7 +76,7 @@ func summarize(format, parser string, iter int, durs []time.Duration) Result {
 		MeanMS:     mean,
 		P50MS:      p(0.50),
 		P95MS:      p(0.95),
-		MinMS:      float64(durs[0].Milliseconds()),
-		MaxMS:      float64(durs[len(durs)-1].Milliseconds()),
+		MinMS:      toMS(durs[0]),
+		MaxMS:      toMS(durs[len(durs)-1]),
 	}
 }
