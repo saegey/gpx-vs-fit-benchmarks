@@ -1,0 +1,105 @@
+➜ npx serverless invoke -f goBench --stage dev3 -l                        
+{
+    "count": 2,
+    "ok": true
+}
+--------------------------------------------------------------------
+START
+{"format":"FIT","iterations":25,"lang":"Go","max_ms":194.952727,"mean_ms":136.0159986,"min_ms":120.12479,"p50_ms":135.764808,"p95_ms":142.082386,"parser":"tormoder/fit"}
+{"format":"GPX","iterations":25,"lang":"Go","max_ms":2121.391344,"mean_ms":1962.96338608,"min_ms":1846.936786,"p50_ms":1961.748063,"p95_ms":2019.106558,"parser":"tkrajina/gpxgo"}
+END Duration: 52477.07 ms (init: 102.71 ms) Memory Used: 133 MB
+
+---
+
+❯ npx serverless invoke -f nodeBench --stage dev3 -l  
+(node:99349) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+    "ok": true
+}
+--------------------------------------------------------------------
+START
+2025-08-26 18:02:44.440 INFO    Sizes: FIT=1,558,095 B  GPX=11,353,470 B
+Record/point counts: fit_records=32412  gpx_points=32412
+FIT (fit-file-parser): n=25 mean=1496.82ms p50=1481.84ms p95=1594.48ms min=1397.70ms max=1660.90ms
+GPX (fast-xml-parser): n=25 mean=2787.06ms p50=2773.96ms p95=2834.38ms min=2743.54ms max=3053.08ms
+
+Speedup (GPX/FIT mean): 1.86x
+File size ratio (GPX/FIT): 7.29x
+
+
+
+{
+    "_aws": {
+        "Timestamp": 1756260042451,
+        "CloudWatchMetrics": [
+            {
+                "Namespace": "GPXvsFIT/Benchmarks",
+                "Dimensions": [
+                    [
+                        "Language",
+                        "Format",
+                        "Parser",
+                        "MemoryMB",
+                        "Cold"
+                    ]
+                ],
+                "Metrics": [
+                    {
+                        "Name": "mean_ms",
+                        "Unit": "Milliseconds"
+                    },
+                    {
+                        "Name": "p50_ms",
+                        "Unit": "Milliseconds"
+                    },
+                    {
+                        "Name": "p95_ms",
+                        "Unit": "Milliseconds"
+                    }
+                ]
+            }
+        ]
+    },
+    "Language": "Python",
+    "Format": "FIT",
+    "Parser": "fitdecode",
+    "MemoryMB": 1024,
+    "Cold": true,
+    "mean_ms": 11871.141428719999,
+    "p50_ms": 11873.998723,
+    "p95_ms": 11918.421553000002
+}
+
+
+{
+    "ts": 1756260042451,
+    "lang": "Python",
+    "memory_mb": 1024,
+    "cold": true,
+    "commit": "dev",
+    "format": "FIT",
+    "parser": "fitdecode",
+    "iterations": 25,
+    "mean_ms": 11871.141428719999,
+    "p50_ms": 11873.998723,
+    "p95_ms": 11918.421553000002,
+    "min_ms": 11773.008622,
+    "max_ms": 11982.017919000014
+}
+
+
+❯ npx serverless invoke -f rubyBench --stage dev3 -l
+(node:61202) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{
+    "ok": true,
+    "count": 1
+}
+--------------------------------------------------------------------
+START
+[rb] start ts=1756261543049 cold=true
+[rb] bench done in 7164.15ms
+{"ts":1756261550214,"lang":"Ruby","format":"FIT","parser":"rubyfit","iterations":25,"mean_ms":274.7659103999982,"p50_ms":275.79385599999284,"p95_ms":279.67501500000935,"min_ms":265.9503679999915,"max_ms":280.03119299999923,"memory_mb":1024,"cold":true,"commit":"dev"}
+[rb] total handler time 7164.36ms
+END Duration: 7175.60 ms (init: 588.80 ms) Memory Used: 49 MB
