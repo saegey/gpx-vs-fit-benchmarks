@@ -1,0 +1,5 @@
+source "https://rubygems.org"
+
+gem "rubyfit"
+# Optional: used if you later add GPX parsing benchmarks
+# gem "nokogiri"

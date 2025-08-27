@@ -4,6 +4,7 @@ const fs = require('fs');
 const { performance } = require('perf_hooks');
 const FitParser = require('fit-file-parser').default || require('fit-file-parser');
 const { XMLParser } = require('fast-xml-parser');
+const path = require("node:path");
 
 function stats(times) {
   const arr = times.slice().sort((a, b) => a - b);
@@ -96,8 +97,9 @@ async function bench(label, n, fn) {
 
 async function main() {
   // args
-  const fitPath = process.argv[2] || 'testdata/activity.fit';
-  const gpxPath = process.argv[3] || 'testdata/activity.gpx';
+
+  const fitPath = process.argv[2] || path.join(__dirname, "testdata", "BWR_San_Diego_Waffle_Ride_.fit");
+  const gpxPath = process.argv[3] || path.join(__dirname, "testdata", "BWR_San_Diego_Waffle_Ride_.gpx");
   const N = Number(process.argv[4] || 25);
 
   const fitBuf = fs.readFileSync(fitPath);

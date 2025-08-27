@@ -1,3 +1,0 @@
-fitdecode
-gpxpy
-fitparse
