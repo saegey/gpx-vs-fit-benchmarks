@@ -2,7 +2,7 @@
 
 This project benchmarks the performance of different libraries and parsers for reading FIT and GPX files across multiple programming languages (Go, Python, Node.js).
 
-This benchmark was created to go along with a blog post [[From GPX to FIT: Lessons in Scaling Fitness Data](https://saegey.com/project/gpx-falls-short/)](https://saegey.com/project/from-gpx-to-fit/)
+This benchmark was created to go along with a blog post [From GPX to FIT: Lessons in Scaling Fitness Data](https://saegey.com/project/from-gpx-to-fit/)
 
 ## Purpose
 The goal is to compare the speed and efficiency of popular FIT and GPX parsing libraries, using real-world activity files, to help developers choose the best tool for their needs.
